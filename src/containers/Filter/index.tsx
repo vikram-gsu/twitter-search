@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import HashTag from "../../components/HashTag";
-
+import { useFilter } from "../../contexts/FilterContext";
 const FilterStyles = styled.div`
   grid-area: filter;
   display: flex;
@@ -24,18 +24,24 @@ const NoHashTagsMessage = styled.div`
 `;
 
 type FilterProps = {
-  hashTags: string[];
+  allHashTags: string[];
 };
-function Filter({ hashTags=[] }: FilterProps) {
-  console.log(hashTags);
+function Filter({ allHashTags = [] }: FilterProps) {
+
+  const {selectedHashTags, onHashTagClick} = useFilter()!;
   return (
     <FilterStyles>
       <p>Filter by hashtag</p>
       <div>
-        {hashTags.map((hashTag) => (
-          <HashTag key={hashTag} value={hashTag} />
+        {allHashTags.map((hashTag) => (
+          <HashTag
+            key={hashTag}
+            value={hashTag}
+            selected={selectedHashTags.has(hashTag)}
+            onHashTagClick={onHashTagClick}
+          />
         ))}
-        {hashTags.length === 0 && (
+        {allHashTags.length === 0 && (
           <NoHashTagsMessage>
             Hash tags appear here as you search for tweets
           </NoHashTagsMessage>

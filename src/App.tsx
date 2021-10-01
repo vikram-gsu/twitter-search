@@ -1,4 +1,10 @@
-import React, { useReducer, useCallback, useEffect } from "react";
+import React, {
+  useReducer,
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+} from "react";
 import styled from "styled-components";
 import axios from "axios";
 import "./App.css";
@@ -8,9 +14,10 @@ import Filter from "./containers/Filter";
 import Heading from "./containers/Heading";
 import Results from "./containers/Results";
 import Search from "./containers/Search";
-import mainReducer, { INITIAL_STATE } from "./reducers/tweetsReducer";
+import tweetsReducer, { INITIAL_STATE } from "./reducers/tweetsReducer";
 import { POSSIBLE_STATES } from "./types/app-state";
 import { formatData, getAllHashTags } from "./data/format-data";
+import { FilterProvider } from "./contexts/FilterContext";
 import debounce from "./data/deboucer";
 
 const AppStyles = styled.div`
@@ -25,7 +32,9 @@ const AppStyles = styled.div`
 `;
 
 function App() {
-  const [state, dispatch] = useReducer(mainReducer, INITIAL_STATE);
+  const [state, dispatch] = useReducer(tweetsReducer, INITIAL_STATE);
+  const [selectedHashTags, setSelectedHashTags] = useState(new Set<string>());
+
   const { searchText, results, allHashTags } = state;
 
   const fetchResults = useCallback(async () => {
@@ -33,7 +42,7 @@ function App() {
       type: POSSIBLE_STATES.LOADING_RESULTS,
     });
     try {
-      await debounce(async () => {
+      debounce(async () => {
         // const {response} = axios.get()
         // console.log(tempResults.statuses);
         let results = formatData(tempResults.statuses);
@@ -46,7 +55,7 @@ function App() {
             hashTags,
           },
         });
-      }, 500);
+      }, 500)();
     } catch (e) {
       dispatch({
         type: POSSIBLE_STATES.HAS_ERROR,
@@ -72,16 +81,46 @@ function App() {
     });
   };
 
+  const onHashTagSelect = (currentSelection: string): void => {
+    let newHashTags = new Set(selectedHashTags);
+    if (selectedHashTags.has(currentSelection)) {
+      newHashTags.delete(currentSelection);
+    } else {
+      newHashTags.add(currentSelection);
+    }
+    setSelectedHashTags(newHashTags);
+  };
+
+  const filteredResults = useMemo(
+    () =>
+      selectedHashTags.size == 0
+        ? results
+        : results.filter(
+            (result) =>
+              result.hash_tags.filter((hashTag) =>
+                selectedHashTags.has(hashTag)
+              ).length > 0
+          ),
+    [results, selectedHashTags]
+  );
+
   return (
-    <AppStyles>
-      <Heading />
-      <Search
-        searchValue={searchText}
-        onSearchChange={handleSearchTextChange}
-      />
-      <Results results={results} />
-      <Filter hashTags={allHashTags} />
-    </AppStyles>
+    <FilterProvider
+      value={{
+        selectedHashTags: selectedHashTags,
+        onHashTagClick: onHashTagSelect,
+      }}
+    >
+      <AppStyles>
+        <Heading />
+        <Search
+          searchValue={searchText}
+          onSearchChange={handleSearchTextChange}
+        />
+        <Results results={filteredResults} />
+        <Filter allHashTags={allHashTags} />
+      </AppStyles>
+    </FilterProvider>
   );
 }
 

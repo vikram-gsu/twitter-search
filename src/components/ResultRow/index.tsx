@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import searchResults from "../../types/search-results";
 import HashTag from "../HashTag";
+import { useFilter } from "../../contexts/FilterContext";
 
 type ResultRowStylesProps = {
   seqNbr: number;
@@ -49,18 +50,26 @@ type ResultRowType = {
   seqNbr: number;
 };
 function ResultRow({ result, seqNbr }: ResultRowType) {
+  const { selectedHashTags, onHashTagClick } = useFilter()!;
   const { image_url, text, hash_tags, user_screen_name, tweet_url } = result;
+
   return (
     <ResultRowStyles seqNbr={seqNbr}>
       <Avatar src={image_url} />
       <TweetStyles>
         <Username>@{user_screen_name}</Username>
         <TweetContent>
-          {text}<a href={tweet_url}>{tweet_url}</a>
+          {text}
+          <a href={tweet_url}>{tweet_url}</a>
         </TweetContent>
         <HashTags>
           {hash_tags.map((hashTag) => (
-            <HashTag key={hashTag} value={hashTag} />
+            <HashTag
+              key={hashTag}
+              value={hashTag}
+              selected={selectedHashTags.has(hashTag)}
+              onHashTagClick={onHashTagClick}
+            />
           ))}
         </HashTags>
       </TweetStyles>

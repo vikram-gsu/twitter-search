@@ -25,7 +25,6 @@ function tweetsReducer(state: AppStateType, action: ActionType): AppStateType {
         results: action.payload.results,
         allHashTags: action.payload.hashTags,
       };
-
     default:
       return state;
   }
