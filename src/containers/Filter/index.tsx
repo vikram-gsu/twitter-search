@@ -24,20 +24,22 @@ const NoHashTagsMessage = styled.div`
 `;
 
 type FilterProps = {
-  hashTags?: string[];
+  hashTags: string[];
 };
-function Filter({ hashTags }: FilterProps) {
+function Filter({ hashTags=[] }: FilterProps) {
+  console.log(hashTags);
   return (
     <FilterStyles>
       <p>Filter by hashtag</p>
       <div>
-        {hashTags &&
-          hashTags.map((hashTag) => <HashTag key={hashTag} value={hashTag} />)}
-        {
-          (!hashTags || hashTags.length == 0) && (<NoHashTagsMessage>
+        {hashTags.map((hashTag) => (
+          <HashTag key={hashTag} value={hashTag} />
+        ))}
+        {hashTags.length === 0 && (
+          <NoHashTagsMessage>
             Hash tags appear here as you search for tweets
-          </NoHashTagsMessage>)
-        }
+          </NoHashTagsMessage>
+        )}
       </div>
     </FilterStyles>
   );

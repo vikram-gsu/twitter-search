@@ -42,7 +42,7 @@ function Results({ results }: ResultsProps) {
         <ResultRow key={seqNbr} result={result} seqNbr={seqNbr} />
       ))}
       {
-        (!results || results.length == 0) && <NoResultsMessage>
+        (!results || results.length === 0) && <NoResultsMessage>
           Results appear here as you search for tweets
         </NoResultsMessage>
       }

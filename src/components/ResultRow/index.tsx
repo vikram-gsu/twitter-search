@@ -33,6 +33,13 @@ const Username = styled.div`
 `;
 const TweetContent = styled.div`
   padding: 0.5em 0;
+  a {
+    text-decoration: none;
+    color: var(--blue-200);
+    :hover {
+      cursor: pointer;
+    }
+  }
 `;
 
 const HashTags = styled.div``;
@@ -45,10 +52,12 @@ function ResultRow({ result, seqNbr }: ResultRowType) {
   const { image_url, text, hash_tags, user_screen_name, tweet_url } = result;
   return (
     <ResultRowStyles seqNbr={seqNbr}>
-      <Avatar></Avatar>
+      <Avatar src={image_url} />
       <TweetStyles>
         <Username>@{user_screen_name}</Username>
-        <TweetContent>{text}{tweet_url}</TweetContent>
+        <TweetContent>
+          {text}<a href={tweet_url}>{tweet_url}</a>
+        </TweetContent>
         <HashTags>
           {hash_tags.map((hashTag) => (
             <HashTag key={hashTag} value={hashTag} />
