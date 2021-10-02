@@ -5,6 +5,7 @@ type AppStateType = {
   results: searchResult[];
   allHashTags: Set<string>;
   loading: boolean;
+  loadMore: boolean;
   hasError: boolean;
   errorMessage?: string;
 };
@@ -14,6 +15,7 @@ enum POSSIBLE_STATES {
   LOADING_RESULTS = "LOADING_RESULTS",
   LOADING_COMPLETE = "LOADING_COMPLETE",
   HAS_ERROR = "HAS_ERROR",
+  LOAD_MORE = "LOAD_MORE"
 }
 export type ActionType =
   | { type: POSSIBLE_STATES.LOADING_RESULTS }
@@ -30,7 +32,13 @@ export type ActionType =
       payload: {
         message: string;
       };
-    };
+    }
+  | {
+    type: POSSIBLE_STATES.LOAD_MORE;
+    payload: {
+      loadMore: boolean
+    }
+  };
 
 export { POSSIBLE_STATES };
 

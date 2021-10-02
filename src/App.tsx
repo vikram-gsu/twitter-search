@@ -38,21 +38,23 @@ function App() {
   );
   const searchText = useDebounce(currentSearchText, 1000);
 
-  const { loading, results, allHashTags } = state;
-
+  const { loading, loadMore, results, allHashTags } = state;
+  const requestEndPoint = "https://twitter-api-backend-vikram.herokuapp.com";
   const fetchResults = useCallback(
-    async (loadMore: boolean) => {
+    async () => {
       dispatch({
         type: POSSIBLE_STATES.LOADING_RESULTS,
       });
       try {
         if (searchText.length !== 0) {
+          let searchEndpoint = `${requestEndPoint}/${searchText}`;
           if (loadMore) {
             let oldestResult = results[results.length - 1];
+            console.log(searchText, results);
+            searchEndpoint = `${searchEndpoint}&max_id=${oldestResult.id}`;
           }
-          const response = await axios.get(
-            `https://twitter-api-backend-vikram.herokuapp.com/getData/${searchText}`
-          );
+
+          const response = await axios.get(searchEndpoint);
           let currentResults = formatData(response.data.statuses);
           let hashTags = getAllHashTags(currentResults);
 
@@ -83,12 +85,12 @@ function App() {
         });
       }
     },
-    [searchText]
+    [loadMore, searchText]
   );
 
   useEffect(() => {
-    fetchResults(false);
-  }, [fetchResults]);
+    fetchResults();
+  }, [loadMore, fetchResults]);
 
   const handleSearchTextChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -107,7 +109,12 @@ function App() {
   };
 
   const onLoadMoreClick = () => {
-    fetchResults(true);
+    dispatch({
+      type: POSSIBLE_STATES.LOAD_MORE,
+      payload: {
+        loadMore: true
+      }
+    })
   };
 
   const filteredResults = useMemo(
