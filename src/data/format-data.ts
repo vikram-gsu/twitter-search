@@ -2,6 +2,8 @@ import searchResult from "../types/search-results";
 
 function formatData(statuses: any): searchResult {
   return statuses.map((status: any) => ({
+    created_at: new Date(status.created_at),
+    id: status.id_str,
     text: status.full_text.slice(0, status.full_text.lastIndexOf("http")),
     hash_tags: status.entities.hashtags.map((hashTag: any) => hashTag.text),
     user_screen_name: status.user.screen_name,

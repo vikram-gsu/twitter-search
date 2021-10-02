@@ -8,7 +8,6 @@ import React, {
 import styled from "styled-components";
 import axios from "axios";
 import "./App.css";
-import * as tempResults from "./data/sample_response.json";
 
 import Filter from "./containers/Filter";
 import Heading from "./containers/Heading";
@@ -18,7 +17,7 @@ import tweetsReducer, { INITIAL_STATE } from "./reducers/tweetsReducer";
 import { POSSIBLE_STATES } from "./types/app-state";
 import { formatData, getAllHashTags } from "./data/format-data";
 import { FilterProvider } from "./contexts/FilterContext";
-import debounce from "./data/deboucer";
+import useDebounce from "./hooks/useDebounce";
 
 const AppStyles = styled.div`
   display: grid;
@@ -34,27 +33,23 @@ const AppStyles = styled.div`
 function App() {
   const [state, dispatch] = useReducer(tweetsReducer, INITIAL_STATE);
   const [selectedHashTags, setSelectedHashTags] = useState(new Set<string>());
+  const [currentSearchText, setCurrentSearchText] = useState(
+    INITIAL_STATE.searchText
+  );
+  const searchText = useDebounce(currentSearchText, 1000);
 
-  const { searchText, results, allHashTags } = state;
+  const { results, allHashTags } = state;
 
   const fetchResults = useCallback(async () => {
     dispatch({
       type: POSSIBLE_STATES.LOADING_RESULTS,
     });
     try {
-      debounce(async () => {
-        // const response = axios.get(
-        //   "https://api.twitter.com/1.1/search/tweets.json?q=nasa&result_type=popular&tweet_mode=extended",
-        //   {
-        //     headers: {
-        //       Authorization: `Bearer ${process.env.REACT_APP_BEARER_TOKEN}`
-        //     }
-        //   }
-        //   );
-        // console.log(response, process.env.REACT_APP_BEARER_TOKEN);
-        console.log(process.env.REACT_APP_BEARER_TOKEN);
-        // console.log(tempResults.statuses);
-        let results = formatData(tempResults.statuses);
+      if (searchText.length !== 0) {
+        const response = await axios.get(
+          `https://twitter-api-backend-vikram.herokuapp.com/getData/${searchText}`
+        );
+        let results = formatData(response.data.statuses);
         let hashTags = getAllHashTags(results);
 
         dispatch({
@@ -64,7 +59,7 @@ function App() {
             hashTags,
           },
         });
-      }, 500)();
+      }
     } catch (e) {
       dispatch({
         type: POSSIBLE_STATES.HAS_ERROR,
@@ -82,12 +77,7 @@ function App() {
   const handleSearchTextChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ): void => {
-    dispatch({
-      type: POSSIBLE_STATES.SET_SEARCH_TEXT,
-      payload: {
-        searchText: e.target.value,
-      },
-    });
+    setCurrentSearchText(e.target.value);
   };
 
   const onHashTagSelect = (currentSelection: string): void => {
@@ -123,7 +113,7 @@ function App() {
       <AppStyles>
         <Heading />
         <Search
-          searchValue={searchText}
+          searchValue={currentSearchText}
           onSearchChange={handleSearchTextChange}
         />
         <Results results={filteredResults} />

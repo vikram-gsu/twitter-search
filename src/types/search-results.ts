@@ -1,4 +1,6 @@
 type searchResult = {
+    created_at: Date,
+    id: string,
     image_url: string,
     user_screen_name: string,
     text: string,
