@@ -43,7 +43,16 @@ function App() {
     });
     try {
       debounce(async () => {
-        // const {response} = axios.get()
+        // const response = axios.get(
+        //   "https://api.twitter.com/1.1/search/tweets.json?q=nasa&result_type=popular&tweet_mode=extended",
+        //   {
+        //     headers: {
+        //       Authorization: `Bearer ${process.env.REACT_APP_BEARER_TOKEN}`
+        //     }
+        //   }
+        //   );
+        // console.log(response, process.env.REACT_APP_BEARER_TOKEN);
+        console.log(process.env.REACT_APP_BEARER_TOKEN);
         // console.log(tempResults.statuses);
         let results = formatData(tempResults.statuses);
         let hashTags = getAllHashTags(results);
@@ -93,7 +102,7 @@ function App() {
 
   const filteredResults = useMemo(
     () =>
-      selectedHashTags.size == 0
+      selectedHashTags.size === 0
         ? results
         : results.filter(
             (result) =>

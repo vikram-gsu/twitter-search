@@ -45,7 +45,7 @@ const TweetContent = styled.div`
 
 const HashTags = styled.div``;
 
-type ResultRowType = {
+export type ResultRowType = {
   result: searchResults;
   seqNbr: number;
 };
@@ -77,4 +77,4 @@ function ResultRow({ result, seqNbr }: ResultRowType) {
   );
 }
 
-export default ResultRow;
+export default React.memo(ResultRow);

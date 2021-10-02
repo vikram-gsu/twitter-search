@@ -23,13 +23,12 @@ const HashTagStyles = styled.button<HashTagStyleProps>`
     background-color: var(--blue-200);
   }
 `;
-type HashTagProps = {
+export type HashTagProps = {
   value: string;
   selected: boolean;
   onHashTagClick: (currentSelection: string) => void;
 };
 function HashTag({ value, selected, onHashTagClick }: HashTagProps) {
-    console.log(value, selected);
   return (
     <HashTagStyles onClick={() => onHashTagClick(value)} selected={selected}>
       #{value}

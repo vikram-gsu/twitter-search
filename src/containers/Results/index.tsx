@@ -55,4 +55,4 @@ function Results({ results }: ResultsProps) {
   );
 }
 
-export default Results;
+export default React.memo(Results);
