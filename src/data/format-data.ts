@@ -1,6 +1,6 @@
-import searchResult from "../types/search-results";
+import searchResult from "../types/search-result";
 
-function formatData(statuses: any): searchResult {
+function formatData(statuses: any): searchResult[] {
   return statuses.map((status: any) => ({
     created_at: new Date(status.created_at),
     id: status.id_str,
@@ -15,13 +15,11 @@ function formatData(statuses: any): searchResult {
   }));
 }
 
-function getAllHashTags(statuses: any): string[] {
-  return Array.from(
-    new Set(
-      statuses.reduce(
-        (hashTags: string[], status: any) => [...hashTags, ...status.hash_tags],
-        []
-      )
+function getAllHashTags(statuses: any): Set<string> {
+  return new Set(
+    statuses.reduce(
+      (hashTags: string[], status: any) => [...hashTags, ...status.hash_tags],
+      []
     )
   );
 }

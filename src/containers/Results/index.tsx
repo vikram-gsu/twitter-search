@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import searchResults from "../../types/search-results";
+import searchResult from "../../types/search-result";
 import ResultRow from "../../components/ResultRow";
 
 const ResultsStyles = styled.div`
@@ -33,22 +33,27 @@ const NoResultsMessage = styled.div`
 `;
 
 type ResultsProps = {
-  results: searchResults[];
+  loading: boolean;
+  results: searchResult[];
+  onLoadMoreClick: () => void;
 };
-function Results({ results }: ResultsProps) {
+function Results({ loading, results, onLoadMoreClick }: ResultsProps) {
   return (
     <ResultsStyles>
       {results.map((result, seqNbr) => (
         <ResultRow key={seqNbr} result={result} seqNbr={seqNbr} />
       ))}
-      {
-        (!results || results.length === 0) && <NoResultsMessage>
+      {!results || results.length === 0 ? (
+        <NoResultsMessage>
           Results appear here as you search for tweets
         </NoResultsMessage>
-      }
-      {results.length > 5 && (
+      ) : (
         <LoadMore>
-          <button>Load More</button>
+          {loading ? (
+            <span>Loading...</span>
+          ) : (
+            <button onClick={onLoadMoreClick}>Load More</button>
+          )}
         </LoadMore>
       )}
     </ResultsStyles>

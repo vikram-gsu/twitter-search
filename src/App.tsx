@@ -14,7 +14,7 @@ import Heading from "./containers/Heading";
 import Results from "./containers/Results";
 import Search from "./containers/Search";
 import tweetsReducer, { INITIAL_STATE } from "./reducers/tweetsReducer";
-import { POSSIBLE_STATES } from "./types/app-state";
+import AppStateType, { POSSIBLE_STATES } from "./types/app-state";
 import { formatData, getAllHashTags } from "./data/format-data";
 import { FilterProvider } from "./contexts/FilterContext";
 import useDebounce from "./hooks/useDebounce";
@@ -38,40 +38,56 @@ function App() {
   );
   const searchText = useDebounce(currentSearchText, 1000);
 
-  const { results, allHashTags } = state;
+  const { loading, results, allHashTags } = state;
 
-  const fetchResults = useCallback(async () => {
-    dispatch({
-      type: POSSIBLE_STATES.LOADING_RESULTS,
-    });
-    try {
-      if (searchText.length !== 0) {
-        const response = await axios.get(
-          `https://twitter-api-backend-vikram.herokuapp.com/getData/${searchText}`
-        );
-        let results = formatData(response.data.statuses);
-        let hashTags = getAllHashTags(results);
+  const fetchResults = useCallback(
+    async (loadMore: boolean) => {
+      dispatch({
+        type: POSSIBLE_STATES.LOADING_RESULTS,
+      });
+      try {
+        if (searchText.length !== 0) {
+          if (loadMore) {
+            let oldestResult = results[results.length - 1];
+          }
+          const response = await axios.get(
+            `https://twitter-api-backend-vikram.herokuapp.com/getData/${searchText}`
+          );
+          let currentResults = formatData(response.data.statuses);
+          let hashTags = getAllHashTags(currentResults);
 
+          dispatch({
+            type: POSSIBLE_STATES.LOADING_COMPLETE,
+            payload: {
+              loadMore,
+              results: currentResults,
+              hashTags,
+            },
+          });
+        } else {
+          dispatch({
+            type: POSSIBLE_STATES.LOADING_COMPLETE,
+            payload: {
+              loadMore: false,
+              results: [],
+              hashTags: new Set(),
+            },
+          });
+        }
+      } catch (e) {
         dispatch({
-          type: POSSIBLE_STATES.LOADING_COMPLETE,
+          type: POSSIBLE_STATES.HAS_ERROR,
           payload: {
-            results,
-            hashTags,
+            message: e as string,
           },
         });
       }
-    } catch (e) {
-      dispatch({
-        type: POSSIBLE_STATES.HAS_ERROR,
-        payload: {
-          errorMessage: e,
-        },
-      });
-    }
-  }, [searchText]);
+    },
+    [searchText]
+  );
 
   useEffect(() => {
-    fetchResults();
+    fetchResults(false);
   }, [fetchResults]);
 
   const handleSearchTextChange = (
@@ -88,6 +104,10 @@ function App() {
       newHashTags.add(currentSelection);
     }
     setSelectedHashTags(newHashTags);
+  };
+
+  const onLoadMoreClick = () => {
+    fetchResults(true);
   };
 
   const filteredResults = useMemo(
@@ -116,8 +136,12 @@ function App() {
           searchValue={currentSearchText}
           onSearchChange={handleSearchTextChange}
         />
-        <Results results={filteredResults} />
-        <Filter allHashTags={allHashTags} />
+        <Results
+          results={filteredResults}
+          onLoadMoreClick={onLoadMoreClick}
+          loading={loading}
+        />
+        <Filter allHashTags={Array.from(allHashTags)} />
       </AppStyles>
     </FilterProvider>
   );

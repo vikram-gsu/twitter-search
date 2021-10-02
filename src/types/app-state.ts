@@ -1,9 +1,9 @@
-import searchResults from "./search-results";
+import searchResult from "./search-result";
 
 type AppStateType = {
   searchText: string;
-  results: searchResults[];
-  allHashTags: string[];
+  results: searchResult[];
+  allHashTags: Set<string>;
   loading: boolean;
   hasError: boolean;
   errorMessage?: string;
@@ -15,10 +15,22 @@ enum POSSIBLE_STATES {
   LOADING_COMPLETE = "LOADING_COMPLETE",
   HAS_ERROR = "HAS_ERROR",
 }
-export type ActionType = {
-  type: POSSIBLE_STATES;
-  payload?: any;
-};
+export type ActionType =
+  | { type: POSSIBLE_STATES.LOADING_RESULTS }
+  | {
+      type: POSSIBLE_STATES.LOADING_COMPLETE;
+      payload: {
+        loadMore: boolean;
+        results: searchResult[];
+        hashTags: Set<string>;
+      };
+    }
+  | {
+      type: POSSIBLE_STATES.HAS_ERROR;
+      payload: {
+        message: string;
+      };
+    };
 
 export { POSSIBLE_STATES };
 

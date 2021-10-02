@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import searchResults from "../../types/search-results";
+import searchResult from "../../types/search-result";
 import HashTag from "../HashTag";
 import { useFilter } from "../../contexts/FilterContext";
 
@@ -46,7 +46,7 @@ const TweetContent = styled.div`
 const HashTags = styled.div``;
 
 export type ResultRowType = {
-  result: searchResults;
+  result: searchResult;
   seqNbr: number;
 };
 function ResultRow({ result, seqNbr }: ResultRowType) {
