@@ -41,7 +41,7 @@ function Results({ loading, results, onLoadMoreClick }: ResultsProps) {
   return (
     <ResultsStyles>
       {results.map((result, seqNbr) => (
-        <ResultRow key={seqNbr} result={result} seqNbr={seqNbr} />
+        <ResultRow key={result.id} result={result} seqNbr={seqNbr} />
       ))}
       {!results || results.length === 0 ? (
         <NoResultsMessage>

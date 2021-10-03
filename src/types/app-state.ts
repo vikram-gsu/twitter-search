@@ -5,7 +5,7 @@ type AppStateType = {
   results: searchResult[];
   allHashTags: Set<string>;
   loading: boolean;
-  loadMore: boolean;
+  loadMore: number;
   hasError: boolean;
   errorMessage?: string;
 };
@@ -22,7 +22,7 @@ export type ActionType =
   | {
       type: POSSIBLE_STATES.LOADING_COMPLETE;
       payload: {
-        loadMore: boolean;
+        loadMore: number;
         results: searchResult[];
         hashTags: Set<string>;
       };
@@ -36,7 +36,7 @@ export type ActionType =
   | {
     type: POSSIBLE_STATES.LOAD_MORE;
     payload: {
-      loadMore: boolean
+      loadMore: number
     }
   };
 

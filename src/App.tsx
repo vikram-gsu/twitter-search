@@ -18,6 +18,7 @@ import AppStateType, { POSSIBLE_STATES } from "./types/app-state";
 import { formatData, getAllHashTags } from "./data/format-data";
 import { FilterProvider } from "./contexts/FilterContext";
 import useDebounce from "./hooks/useDebounce";
+import searchResult from "./types/search-result";
 
 const AppStyles = styled.div`
   display: grid;
@@ -40,53 +41,60 @@ function App() {
 
   const { loading, loadMore, results, allHashTags } = state;
   const requestEndPoint = "https://twitter-api-backend-vikram.herokuapp.com";
-  const fetchResults = useCallback(
-    async () => {
-      dispatch({
-        type: POSSIBLE_STATES.LOADING_RESULTS,
-      });
-      try {
-        if (searchText.length !== 0) {
-          let searchEndpoint = `${requestEndPoint}/${searchText}`;
-          if (loadMore) {
-            let oldestResult = results[results.length - 1];
-            console.log(searchText, results);
-            searchEndpoint = `${searchEndpoint}&max_id=${oldestResult.id}`;
-          }
-
-          const response = await axios.get(searchEndpoint);
-          let currentResults = formatData(response.data.statuses);
-          let hashTags = getAllHashTags(currentResults);
-
-          dispatch({
-            type: POSSIBLE_STATES.LOADING_COMPLETE,
-            payload: {
-              loadMore,
-              results: currentResults,
-              hashTags,
-            },
-          });
-        } else {
-          dispatch({
-            type: POSSIBLE_STATES.LOADING_COMPLETE,
-            payload: {
-              loadMore: false,
-              results: [],
-              hashTags: new Set(),
-            },
-          });
+  const fetchResults = useCallback(async () => {
+    dispatch({
+      type: POSSIBLE_STATES.LOADING_RESULTS,
+    });
+    try {
+      if (searchText.length !== 0) {
+        let searchEndpoint = `${requestEndPoint}/${searchText}`;
+        let oldestResult: searchResult | null = null;
+        if (loadMore) {
+          oldestResult = results[results.length - 1];
+          searchEndpoint = `${searchEndpoint}&max_id=${oldestResult.id}&count=6`;
         }
-      } catch (e) {
+
+        const response = await axios.get(searchEndpoint);
+        let currentResults = formatData(response.data.statuses);
+        if (oldestResult) {
+          currentResults = currentResults.filter(
+            (result) => result.id !== oldestResult!.id
+          );
+        }
+        let hashTags = getAllHashTags(currentResults);
+
+        console.log(
+          "results",
+          results.map((result) => result.id)
+        );
+        console.log(loadMore, currentResults.map((result) => result.id));
         dispatch({
-          type: POSSIBLE_STATES.HAS_ERROR,
+          type: POSSIBLE_STATES.LOADING_COMPLETE,
           payload: {
-            message: e as string,
+            loadMore,
+            results: currentResults,
+            hashTags,
+          },
+        });
+      } else {
+        dispatch({
+          type: POSSIBLE_STATES.LOADING_COMPLETE,
+          payload: {
+            loadMore: 0,
+            results: [],
+            hashTags: new Set(),
           },
         });
       }
-    },
-    [loadMore, searchText]
-  );
+    } catch (e) {
+      dispatch({
+        type: POSSIBLE_STATES.HAS_ERROR,
+        payload: {
+          message: e as string,
+        },
+      });
+    }
+  }, [loadMore, searchText]);
 
   useEffect(() => {
     fetchResults();
@@ -112,9 +120,9 @@ function App() {
     dispatch({
       type: POSSIBLE_STATES.LOAD_MORE,
       payload: {
-        loadMore: true
-      }
-    })
+        loadMore: loadMore+1,
+      },
+    });
   };
 
   const filteredResults = useMemo(
