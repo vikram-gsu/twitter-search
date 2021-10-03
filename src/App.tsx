@@ -15,7 +15,7 @@ import Results from "./containers/Results";
 import Search from "./containers/Search";
 import tweetsReducer, { INITIAL_STATE } from "./reducers/tweetsReducer";
 import AppStateType, { ActionType, POSSIBLE_STATES } from "./types/app-state";
-import { formatData, getAllHashTags } from "./data/format-data";
+import { formatData, getAllHashTags } from "./api/format-data";
 import { FilterProvider } from "./contexts/FilterContext";
 import useDebounce from "./hooks/useDebounce";
 import searchResult from "./types/search-result";
