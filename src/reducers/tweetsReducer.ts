@@ -1,17 +1,24 @@
 import AppStateType, { ActionType, POSSIBLE_STATES } from "../types/app-state";
 
 const INITIAL_STATE: AppStateType = {
-  searchText: "",
+  currentSearchText: "",
   results: [],
   allHashTags: new Set(),
   loading: false,
   loadMore: 0,
-  hasError: false,
+  hasError: false
 };
 
 function tweetsReducer(state: AppStateType, action: ActionType): AppStateType {
   console.log(state, action);
   switch (action.type) {
+    case POSSIBLE_STATES.SET_SEARCH_TEXT:
+      return {
+        ...state,
+        currentSearchText: action.payload.currentSearchText,
+        results: [],
+        loadMore: 0,
+      };
     case POSSIBLE_STATES.LOADING_RESULTS:
       return { ...state, loading: true };
     case POSSIBLE_STATES.HAS_ERROR:

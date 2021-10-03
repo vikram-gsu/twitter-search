@@ -13,25 +13,55 @@ const FilterStyles = styled.div`
   height: max-content;
   p {
     margin: 0;
-    font-size: 1.2em;
+    font-size: 1.1em;
     font-weight: bold;
     color: var(--gray-300);
     padding-bottom: 1em;
+    button {
+      border: none;
+      background: none;
+      padding: 0;
+      border-radius: 10px;
+      font-size: 0.75em;
+      color: var(--blue-200);
+      padding: 0 0.5em;
+      margin-left: 0.5em;
+      cursor: pointer;
+      :hover {
+        color: var(--blue-100);
+        background-color: var(--blue-200);
+      }
+      :disabled {
+        color: var(--gray-500);
+        background-color: white;
+        cursor: auto;
+      }
+    }
   }
-`;
-const NoHashTagsMessage = styled.div`
-  font-style: italic;
+  @media screen and (max-width: 467px) {
+    height: auto;
+    overflow: scroll;
+  }
 `;
 
 type FilterProps = {
   allHashTags: string[];
 };
 function Filter({ allHashTags = [] }: FilterProps) {
-
-  const {selectedHashTags, onHashTagClick} = useFilter()!;
+  const { selectedHashTags, clearHashTagSelection, onHashTagClick } =
+    useFilter()!;
   return (
     <FilterStyles>
-      <p>Filter by hashtag</p>
+      <p>
+        Filter by hashtag
+        <button
+          disabled={selectedHashTags.size === 0}
+          onClick={clearHashTagSelection}
+        >
+          Clear selection
+        </button>
+      </p>
+
       <div>
         {allHashTags.map((hashTag) => (
           <HashTag
@@ -41,11 +71,6 @@ function Filter({ allHashTags = [] }: FilterProps) {
             onHashTagClick={onHashTagClick}
           />
         ))}
-        {allHashTags.length === 0 && (
-          <NoHashTagsMessage>
-            Hash tags appear here as you search for tweets
-          </NoHashTagsMessage>
-        )}
       </div>
     </FilterStyles>
   );

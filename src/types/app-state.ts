@@ -1,7 +1,7 @@
 import searchResult from "./search-result";
 
 type AppStateType = {
-  searchText: string;
+  currentSearchText: string;
   results: searchResult[];
   allHashTags: Set<string>;
   loading: boolean;
@@ -15,9 +15,15 @@ enum POSSIBLE_STATES {
   LOADING_RESULTS = "LOADING_RESULTS",
   LOADING_COMPLETE = "LOADING_COMPLETE",
   HAS_ERROR = "HAS_ERROR",
-  LOAD_MORE = "LOAD_MORE"
+  LOAD_MORE = "LOAD_MORE",
 }
 export type ActionType =
+  | {
+      type: POSSIBLE_STATES.SET_SEARCH_TEXT;
+      payload: {
+        currentSearchText: string;
+      };
+    }
   | { type: POSSIBLE_STATES.LOADING_RESULTS }
   | {
       type: POSSIBLE_STATES.LOADING_COMPLETE;
@@ -34,11 +40,11 @@ export type ActionType =
       };
     }
   | {
-    type: POSSIBLE_STATES.LOAD_MORE;
-    payload: {
-      loadMore: number
-    }
-  };
+      type: POSSIBLE_STATES.LOAD_MORE;
+      payload: {
+        loadMore: number;
+      };
+    };
 
 export { POSSIBLE_STATES };
 

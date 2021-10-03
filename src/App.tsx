@@ -14,7 +14,7 @@ import Heading from "./containers/Heading";
 import Results from "./containers/Results";
 import Search from "./containers/Search";
 import tweetsReducer, { INITIAL_STATE } from "./reducers/tweetsReducer";
-import AppStateType, { POSSIBLE_STATES } from "./types/app-state";
+import AppStateType, { ActionType, POSSIBLE_STATES } from "./types/app-state";
 import { formatData, getAllHashTags } from "./data/format-data";
 import { FilterProvider } from "./contexts/FilterContext";
 import useDebounce from "./hooks/useDebounce";
@@ -29,17 +29,39 @@ const AppStyles = styled.div`
   grid-template-columns: 20vw 40vw 18vw 22vw;
   grid-template-rows: 6em 4em 1fr;
   grid-gap: 1em;
+  @media screen and (max-width: 467px) {
+    grid-template-areas:
+      "header"
+      "search"
+      "filter"
+      "results";
+    grid-template-columns: 1fr;
+    grid-template-rows: 4em 4em 12em 1fr;
+    grid-gap: 1em;
+  }
+`;
+
+const CurrentStateMessage = styled.div`
+  grid-area: results;
 `;
 
 function App() {
-  const [state, dispatch] = useReducer(tweetsReducer, INITIAL_STATE);
+  const [state, dispatch] = useReducer<
+    (state: AppStateType, action: ActionType) => AppStateType
+  >(tweetsReducer, INITIAL_STATE);
   const [selectedHashTags, setSelectedHashTags] = useState(new Set<string>());
-  const [currentSearchText, setCurrentSearchText] = useState(
-    INITIAL_STATE.searchText
-  );
+
+  const {
+    currentSearchText,
+    loading,
+    loadMore,
+    results,
+    allHashTags,
+    hasError,
+    errorMessage,
+  } = state;
   const searchText = useDebounce(currentSearchText, 1000);
 
-  const { loading, loadMore, results, allHashTags } = state;
   const requestEndPoint = "https://twitter-api-backend-vikram.herokuapp.com";
   const fetchResults = useCallback(async () => {
     dispatch({
@@ -51,7 +73,7 @@ function App() {
         let oldestResult: searchResult | null = null;
         if (loadMore) {
           oldestResult = results[results.length - 1];
-          searchEndpoint = `${searchEndpoint}&max_id=${oldestResult.id}&count=6`;
+          searchEndpoint = `${searchEndpoint}&max_id=${oldestResult.id}`;
         }
 
         const response = await axios.get(searchEndpoint);
@@ -63,11 +85,6 @@ function App() {
         }
         let hashTags = getAllHashTags(currentResults);
 
-        console.log(
-          "results",
-          results.map((result) => result.id)
-        );
-        console.log(loadMore, currentResults.map((result) => result.id));
         dispatch({
           type: POSSIBLE_STATES.LOADING_COMPLETE,
           payload: {
@@ -103,7 +120,12 @@ function App() {
   const handleSearchTextChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ): void => {
-    setCurrentSearchText(e.target.value);
+    dispatch({
+      type: POSSIBLE_STATES.SET_SEARCH_TEXT,
+      payload: {
+        currentSearchText: e.target.value,
+      },
+    });
   };
 
   const onHashTagSelect = (currentSelection: string): void => {
@@ -116,11 +138,15 @@ function App() {
     setSelectedHashTags(newHashTags);
   };
 
+  const clearHashTagSelection = () => {
+    setSelectedHashTags(new Set());
+  };
+
   const onLoadMoreClick = () => {
     dispatch({
       type: POSSIBLE_STATES.LOAD_MORE,
       payload: {
-        loadMore: loadMore+1,
+        loadMore: loadMore + 1,
       },
     });
   };
@@ -142,6 +168,7 @@ function App() {
     <FilterProvider
       value={{
         selectedHashTags: selectedHashTags,
+        clearHashTagSelection: clearHashTagSelection,
         onHashTagClick: onHashTagSelect,
       }}
     >
@@ -151,12 +178,20 @@ function App() {
           searchValue={currentSearchText}
           onSearchChange={handleSearchTextChange}
         />
-        <Results
-          results={filteredResults}
-          onLoadMoreClick={onLoadMoreClick}
-          loading={loading}
-        />
-        <Filter allHashTags={Array.from(allHashTags)} />
+        {loading && filteredResults.length === 0 && (
+          <CurrentStateMessage>Loading...</CurrentStateMessage>
+        )}
+        {hasError && <CurrentStateMessage>{errorMessage}</CurrentStateMessage>}
+        {filteredResults.length > 0 && (
+          <Results
+            results={filteredResults}
+            onLoadMoreClick={onLoadMoreClick}
+            loading={loading}
+          />
+        )}
+        {allHashTags.size > 0 && (
+          <Filter allHashTags={Array.from(allHashTags)} />
+        )}
       </AppStyles>
     </FilterProvider>
   );

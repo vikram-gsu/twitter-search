@@ -6,6 +6,9 @@ const HeadingStyles = styled.div`
     padding: 2em 0;
     font-size: 1.5em;
     font-weight: bold;
+    @media screen and (max-width: 467px){
+        padding: 1em;
+    }
 `;
 
 function Heading() {

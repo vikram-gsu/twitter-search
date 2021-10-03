@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 interface FilterValueType {
   selectedHashTags: Set<string>;
   onHashTagClick: (currnetSelection:string) => void;
+  clearHashTagSelection: ()=> void;
 }
 const FilterContext = React.createContext<FilterValueType|null>(null);
 

@@ -8,7 +8,6 @@ const ResultsStyles = styled.div`
   display: flex;
   flex-direction: column;
   box-shadow: var(--box-shadow);
-  /* border-radius: var(--box-border-radius); */
 `;
 const LoadMore = styled.div`
   button {
@@ -27,11 +26,6 @@ const LoadMore = styled.div`
   justify-content: center;
 `;
 
-const NoResultsMessage = styled.div`
-  text-align: center;
-  font-style: italic;
-`;
-
 type ResultsProps = {
   loading: boolean;
   results: searchResult[];
@@ -43,19 +37,13 @@ function Results({ loading, results, onLoadMoreClick }: ResultsProps) {
       {results.map((result, seqNbr) => (
         <ResultRow key={result.id} result={result} seqNbr={seqNbr} />
       ))}
-      {!results || results.length === 0 ? (
-        <NoResultsMessage>
-          Results appear here as you search for tweets
-        </NoResultsMessage>
-      ) : (
-        <LoadMore>
-          {loading ? (
-            <span>Loading...</span>
-          ) : (
-            <button onClick={onLoadMoreClick}>Load More</button>
-          )}
-        </LoadMore>
-      )}
+      <LoadMore>
+        {loading ? (
+          <span>Loading...</span>
+        ) : (
+          <button onClick={onLoadMoreClick}>Load More</button>
+        )}
+      </LoadMore>
     </ResultsStyles>
   );
 }

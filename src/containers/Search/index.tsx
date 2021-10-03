@@ -16,6 +16,10 @@ const SearchStyles = styled.div`
       outline: 2px solid var(--blue-200);
     }
   }
+  @media screen and (max-width: 467px){
+    margin: 0 1em;
+    height: 4em;
+  }
 `;
 
 type SearchProps = {
