@@ -54,8 +54,8 @@ function ResultRow({ result, seqNbr }: ResultRowType) {
   const { image_url, text, hash_tags, user_screen_name, tweet_url } = result;
 
   return (
-    <ResultRowStyles seqNbr={seqNbr}>
-      <Avatar src={image_url} />
+    <ResultRowStyles data-testid="Result row" seqNbr={seqNbr}>
+      <Avatar src={image_url} alt={"Avatar image"} />
       <TweetStyles>
         <Username>@{user_screen_name}</Username>
         <TweetContent>

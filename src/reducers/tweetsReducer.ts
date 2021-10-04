@@ -10,7 +10,6 @@ const INITIAL_STATE: AppStateType = {
 };
 
 function tweetsReducer(state: AppStateType, action: ActionType): AppStateType {
-  console.log(state, action);
   switch (action.type) {
     case POSSIBLE_STATES.SET_SEARCH_TEXT:
       return {

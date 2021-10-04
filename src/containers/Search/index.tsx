@@ -34,6 +34,7 @@ function Search({ searchValue = "", onSearchChange }: SearchProps) {
         value={searchValue}
         placeholder="Search by keyword"
         onChange={onSearchChange}
+        autoFocus={true}
       />
     </SearchStyles>
   );
