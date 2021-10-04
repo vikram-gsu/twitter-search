@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/vikram-gsu/twitter-search/static/css/main.dd68914f.chunk.css",
-    "main.js": "/vikram-gsu/twitter-search/static/js/main.ba2b1c90.chunk.js",
-    "main.js.map": "/vikram-gsu/twitter-search/static/js/main.ba2b1c90.chunk.js.map",
+    "main.js": "/vikram-gsu/twitter-search/static/js/main.e82ad5ec.chunk.js",
+    "main.js.map": "/vikram-gsu/twitter-search/static/js/main.e82ad5ec.chunk.js.map",
     "runtime-main.js": "/vikram-gsu/twitter-search/static/js/runtime-main.b5b0f241.js",
     "runtime-main.js.map": "/vikram-gsu/twitter-search/static/js/runtime-main.b5b0f241.js.map",
     "static/js/2.cfedfe0c.chunk.js": "/vikram-gsu/twitter-search/static/js/2.cfedfe0c.chunk.js",
@@ -17,6 +17,6 @@
     "static/js/runtime-main.b5b0f241.js",
     "static/js/2.cfedfe0c.chunk.js",
     "static/css/main.dd68914f.chunk.css",
-    "static/js/main.ba2b1c90.chunk.js"
+    "static/js/main.e82ad5ec.chunk.js"
   ]
 }
