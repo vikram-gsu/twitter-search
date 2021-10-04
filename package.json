@@ -1,6 +1,6 @@
 {
-  "name": "twitter-api",
-  "homepage": "https://github.com/vikram-gsu/twitter-search",
+  "name": "twitter-search",
+  "homepage": "https://vikram-gsu.github.io/twitter-search/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -25,8 +25,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "predeploy": "npm run build", 
-    "deploy": "gh-pages -d build", 
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
