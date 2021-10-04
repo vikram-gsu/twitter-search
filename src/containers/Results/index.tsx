@@ -35,19 +35,17 @@ function Results({ loading, results, onLoadMoreClick }: ResultsProps) {
   return (
     <ResultsStyles>
       {results.map((result, seqNbr) => (
-        <ResultRow
-          key={result.id}
-          result={result}
-          seqNbr={seqNbr}
-        />
+        <ResultRow key={result.id} result={result} seqNbr={seqNbr} />
       ))}
-      <LoadMore>
-        {loading ? (
-          <span>Loading...</span>
-        ) : (
-          <button onClick={onLoadMoreClick}>Load More</button>
-        )}
-      </LoadMore>
+      {results.length >= 5 && (
+        <LoadMore>
+          {loading ? (
+            <span>Loading...</span>
+          ) : (
+            <button onClick={onLoadMoreClick}>Load More</button>
+          )}
+        </LoadMore>
+      )}
     </ResultsStyles>
   );
 }

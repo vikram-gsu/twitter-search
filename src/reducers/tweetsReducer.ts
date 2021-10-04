@@ -6,7 +6,7 @@ const INITIAL_STATE: AppStateType = {
   allHashTags: new Set(),
   loading: false,
   loadMore: 0,
-  hasError: false
+  hasError: false,
 };
 
 function tweetsReducer(state: AppStateType, action: ActionType): AppStateType {
@@ -21,7 +21,15 @@ function tweetsReducer(state: AppStateType, action: ActionType): AppStateType {
     case POSSIBLE_STATES.LOADING_RESULTS:
       return { ...state, loading: true };
     case POSSIBLE_STATES.HAS_ERROR:
-      return { ...state, hasError: true, errorMessage: action.payload.message };
+      return {
+        ...state,
+        loading: false,
+        loadMore: 0,
+        results: [],
+        allHashTags: new Set(),
+        hasError: true,
+        errorMessage: action.payload.message,
+      };
     case POSSIBLE_STATES.LOADING_COMPLETE:
       if (action.payload.loadMore > 0) {
         return {

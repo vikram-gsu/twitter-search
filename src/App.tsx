@@ -60,7 +60,7 @@ function App() {
     hasError,
     errorMessage,
   } = state;
-  const searchText = useDebounce(currentSearchText, 1000);
+  const searchText = (useDebounce(currentSearchText, 1000)).trim();
 
   const requestEndPoint = "https://twitter-api-backend-vikram.herokuapp.com";
   const fetchResults = useCallback(async () => {
@@ -103,11 +103,11 @@ function App() {
           },
         });
       }
-    } catch (e) {
+    } catch (e:any) {
       dispatch({
         type: POSSIBLE_STATES.HAS_ERROR,
         payload: {
-          message: e as string,
+          message: e.message,
         },
       });
     }
